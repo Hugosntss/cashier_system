@@ -3,17 +3,24 @@
 #include <string>
 using namespace std;
 
+// Constants
+const int MAX_ITEMS = 10;  // Maximum number of items in the cart
+
 // Function prototypes
-double selectRice();
-double selectNoodle();
-double selectSalad();
-double selectProtein();
+double selectRice(string cart[], double prices[], int &itemCount);
+double selectNoodle(string cart[], double prices[], int &itemCount);
+double selectSalad(string cart[], double prices[], int &itemCount);
+double selectProtein(string cart[], double prices[], int &itemCount);
 void displayMenu();
 double applyStudentDiscount(double total);
+void removeItem(string cart[], double prices[], int &itemCount, double &total);
 
 // Main function
 int main() {
     int bowlChoice, numGrilledVeg;
+    string cart[MAX_ITEMS];   // Array to store item names
+    double prices[MAX_ITEMS]; // Array to store item prices
+    int itemCount = 0;        // Track number of items in the cart
     double total = 0, taxRate = 0.07;  // 7% sales tax
 
     // Display the menu to the user
@@ -29,23 +36,36 @@ int main() {
 
     // Depending on the user's choice, offer rice, noodle, or salad options
     if (bowlChoice == 1) {
-        total += selectRice();
+        total += selectRice(cart, prices, itemCount);
     } else if (bowlChoice == 2) {
-        total += selectNoodle();
+        total += selectNoodle(cart, prices, itemCount);
     } else if (bowlChoice == 3) {
-        total += selectSalad();
+        total += selectSalad(cart, prices, itemCount);
     } else {
         cout << "Invalid choice, no bowl selected.\n";
         return 0; // Exit if invalid choice
     }
 
     // Add protein options
-    total += selectProtein();
+    total += selectProtein(cart, prices, itemCount);
 
     // Ask the user if they want to add Grilled Vegetables
     cout << "Would you like to add Grilled Vegetables for $3.50? (Enter 1 for Yes or 0 for No): ";
     cin >> numGrilledVeg;
-    total += numGrilledVeg * 3.50;
+    if (numGrilledVeg == 1 && itemCount < MAX_ITEMS) {
+        cart[itemCount] = "Grilled Vegetables";
+        prices[itemCount] = 3.50;
+        total += 3.50;
+        itemCount++;
+    }
+
+    // Ask if the user wants to remove any items from the cart
+    cout << "Would you like to remove any items from your cart? (Enter 1 for Yes or 0 for No): ";
+    int removeChoice;
+    cin >> removeChoice;
+    if (removeChoice == 1) {
+        removeItem(cart, prices, itemCount, total);  // Pass total by reference
+    }
 
     // Apply student discount if eligible
     total = applyStudentDiscount(total);
@@ -54,8 +74,12 @@ int main() {
     double tax = total * taxRate;
     double totalDue = total + tax;
 
-    // Display the results
-    cout << fixed << setprecision(2);  // Set precision to 2 decimal places
+    // Display the cart and total
+    cout << "\nItems in your cart:\n";
+    for (int i = 0; i < itemCount; i++) {
+        cout << "- " << cart[i] << ": $" << fixed << setprecision(2) << prices[i] << endl;
+    }
+
     cout << "Subtotal: $" << total << endl;
     cout << "Tax (7%): $" << tax << endl;
     cout << "Total due: $" << totalDue << endl;
@@ -64,7 +88,7 @@ int main() {
 }
 
 // Function to select and return the cost of rice
-double selectRice() {
+double selectRice(string cart[], double prices[], int &itemCount) {
     int choice;
     double price = 0;
 
@@ -74,10 +98,16 @@ double selectRice() {
     cout << "Enter your choice (1 or 2): ";
     cin >> choice;
 
-    if (choice == 1) {
+    if (choice == 1 && itemCount < MAX_ITEMS) {
         price = 3.25;
-    } else if (choice == 2) {
+        cart[itemCount] = "Fried Rice";
+        prices[itemCount] = price;
+        itemCount++;
+    } else if (choice == 2 && itemCount < MAX_ITEMS) {
         price = 2.20;
+        cart[itemCount] = "White Rice";
+        prices[itemCount] = price;
+        itemCount++;
     } else {
         cout << "Invalid choice, no rice added.\n";
     }
@@ -86,7 +116,7 @@ double selectRice() {
 }
 
 // Function to select and return the cost of noodles
-double selectNoodle() {
+double selectNoodle(string cart[], double prices[], int &itemCount) {
     int choice;
     double price = 0;
 
@@ -94,15 +124,24 @@ double selectNoodle() {
     cout << "1. Udon ($4.35)\n";
     cout << "2. Egg Noodles ($3.25)\n";
     cout << "3. Rice Noodles ($3.00)\n";
-    cout << "Enter your choice (1, 2 or 3): ";
+    cout << "Enter your choice (1, 2, or 3): ";
     cin >> choice;
 
-    if (choice == 1) {
+    if (choice == 1 && itemCount < MAX_ITEMS) {
         price = 4.35;
-    } else if (choice == 2) {
+        cart[itemCount] = "Udon";
+        prices[itemCount] = price;
+        itemCount++;
+    } else if (choice == 2 && itemCount < MAX_ITEMS) {
         price = 3.25;
-    } else if (choice == 3) {
+        cart[itemCount] = "Egg Noodles";
+        prices[itemCount] = price;
+        itemCount++;
+    } else if (choice == 3 && itemCount < MAX_ITEMS) {
         price = 3.00;
+        cart[itemCount] = "Rice Noodles";
+        prices[itemCount] = price;
+        itemCount++;
     } else {
         cout << "Invalid choice, no noodles added.\n";
     }
@@ -111,12 +150,18 @@ double selectNoodle() {
 }
 
 // Function to select and return the cost of a salad
-double selectSalad() {
-    return 2.75;
+double selectSalad(string cart[], double prices[], int &itemCount) {
+    if (itemCount < MAX_ITEMS) {
+        cart[itemCount] = "Salad Bowl";
+        prices[itemCount] = 2.75;
+        itemCount++;
+        return 2.75;
+    }
+    return 0;
 }
 
 // Function to select and return the cost of a protein
-double selectProtein() {
+double selectProtein(string cart[], double prices[], int &itemCount) {
     int choice;
     double price = 0;
 
@@ -128,19 +173,65 @@ double selectProtein() {
     cout << "Enter your choice (1, 2, 3 or 4): ";
     cin >> choice;
 
-    if (choice == 1) {
+    if (choice == 1 && itemCount < MAX_ITEMS) {
         price = 3.00;
-    } else if (choice == 2) {
+        cart[itemCount] = "Chicken";
+        prices[itemCount] = price;
+        itemCount++;
+    } else if (choice == 2 && itemCount < MAX_ITEMS) {
         price = 5.50;
-    } else if (choice == 3) {
+        cart[itemCount] = "Steak";
+        prices[itemCount] = price;
+        itemCount++;
+    } else if (choice == 3 && itemCount < MAX_ITEMS) {
         price = 4.25;
-    } else if (choice == 4) {
+        cart[itemCount] = "Tofu";
+        prices[itemCount] = price;
+        itemCount++;
+    } else if (choice == 4 && itemCount < MAX_ITEMS) {
         price = 7.00;
+        cart[itemCount] = "Sweet Ribs";
+        prices[itemCount] = price;
+        itemCount++;
     } else {
         cout << "Invalid choice, no protein added.\n";
     }
 
     return price;
+}
+
+// Function to remove items from the cart
+void removeItem(string cart[], double prices[], int &itemCount, double &total) {
+    if (itemCount == 0) {
+        cout << "Your cart is empty. No items to remove.\n";
+        return;
+    }
+
+    // Display current items in the cart
+    cout << "\nCurrent items in your cart:\n";
+    for (int i = 0; i < itemCount; i++) {
+        cout << i + 1 << ". " << cart[i] << ": $" << fixed << setprecision(2) << prices[i] << endl;
+    }
+
+    // Ask which item to remove
+    int removeIndex;
+    cout << "Enter the number of the item you want to remove (1 to " << itemCount << "): ";
+    cin >> removeIndex;
+
+    // Remove the selected item
+    if (removeIndex > 0 && removeIndex <= itemCount) {
+        // Subtract the price of the removed item from total
+        total -= prices[removeIndex - 1];
+        
+        for (int i = removeIndex - 1; i < itemCount - 1; i++) {
+            cart[i] = cart[i + 1];
+            prices[i] = prices[i + 1];
+        }
+        itemCount--;
+        cout << "Item removed successfully!\n";
+    } else {
+        cout << "Invalid selection.\n";
+    }
 }
 
 // Function to display the menu
