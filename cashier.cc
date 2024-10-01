@@ -1,5 +1,6 @@
 #include <iostream>
 #include <iomanip>
+#include <string>
 using namespace std;
 
 // Function prototypes
@@ -8,6 +9,7 @@ double selectNoodle();
 double selectSalad();
 double selectProtein();
 void displayMenu();
+double applyStudentDiscount(double total);
 
 // Main function
 int main() {
@@ -37,13 +39,16 @@ int main() {
         return 0; // Exit if invalid choice
     }
 
-    // Added protein options
+    // Add protein options
     total += selectProtein();
 
     // Ask the user if they want to add Grilled Vegetables
     cout << "Would you like to add Grilled Vegetables for $3.50? (Enter 1 for Yes or 0 for No): ";
     cin >> numGrilledVeg;
     total += numGrilledVeg * 3.50;
+
+    // Apply student discount if eligible
+    total = applyStudentDiscount(total);
 
     // Calculate tax and total due
     double tax = total * taxRate;
@@ -157,4 +162,30 @@ void displayMenu() {
     cout << "   - Sweet Ribs ($7.00)\n";
     cout << "5. Grilled Vegetables: $3.50\n";
     cout << "-----------------------------\n";
+}
+
+// Function to apply a student discount if eligible
+double applyStudentDiscount(double total) {
+    int isStudent;
+    string studentNumber;
+
+    // Ask if the user is a student
+    cout << "Are you a student? (Enter 1 for Yes or 0 for No): ";
+    cin >> isStudent;
+
+    // If the user is a student, ask for a 9-digit student number
+    if (isStudent == 1) {
+        cout << "Please enter your 9-digit student number: ";
+        cin >> studentNumber;
+
+        // Check if the student number is 9 digits
+        if (studentNumber.length() == 9) {
+            cout << "Student discount applied! You receive 15% off your total.\n";
+            total *= 0.85;  // Apply 15% discount
+        } else {
+            cout << "Invalid student number. No discount applied.\n";
+        }
+    }
+
+    return total;
 }
