@@ -1,6 +1,8 @@
 #include <iostream>
 #include <iomanip>
 #include <string>
+#include <fstream>
+#include <ctime>
 using namespace std;
 
 // Constants
@@ -14,8 +16,8 @@ double selectProtein(string cart[], double prices[], int &itemCount);
 void displayMenu();
 double applyStudentDiscount(double total);
 void removeItem(string cart[], double prices[], int &itemCount, double &total);
+void saveOrder(string cart[], double prices[], int itemCount, double total);
 
-// Main function
 int main() {
     int bowlChoice, numGrilledVeg;
     string cart[MAX_ITEMS];   // Array to store item names
@@ -43,7 +45,7 @@ int main() {
         total += selectSalad(cart, prices, itemCount);
     } else {
         cout << "Invalid choice, no bowl selected.\n";
-        return 0; // Exit if invalid choice
+        return 0;
     }
 
     // Add protein options
@@ -83,6 +85,9 @@ int main() {
     cout << "Subtotal: $" << total << endl;
     cout << "Tax (7%): $" << tax << endl;
     cout << "Total due: $" << totalDue << endl;
+
+    // Save the order
+    saveOrder(cart, prices, itemCount, totalDue);
 
     return 0;
 }
@@ -222,16 +227,45 @@ void removeItem(string cart[], double prices[], int &itemCount, double &total) {
     if (removeIndex > 0 && removeIndex <= itemCount) {
         // Subtract the price of the removed item from total
         total -= prices[removeIndex - 1];
-        
+
+        // Shift items to fill the gap
         for (int i = removeIndex - 1; i < itemCount - 1; i++) {
             cart[i] = cart[i + 1];
             prices[i] = prices[i + 1];
         }
-        itemCount--;
+        itemCount--;  // Decrease the item count
         cout << "Item removed successfully!\n";
     } else {
         cout << "Invalid selection.\n";
     }
+}
+
+// Function to save the order to a file
+void saveOrder(string cart[], double prices[], int itemCount, double total) {
+    ofstream outFile("completed_orders.txt", ios::app);
+    if (!outFile) {
+        cout << "Error opening file for writing.\n";
+        return;
+    }
+
+    // Get the current date and time
+    time_t now = time(0);
+    char* dt = ctime(&now);
+
+    // Write date and time
+    outFile << "Order completed on: " << dt;
+
+    // Write cart details
+    for (int i = 0; i < itemCount; i++) {
+        outFile << cart[i] << ": $" << fixed << setprecision(2) << prices[i] << endl;
+    }
+
+    // Write total amount
+    outFile << "Total: $" << fixed << setprecision(2) << total << endl;
+    outFile << "------------------------------\n";
+
+    cout << "Order saved successfully!\n";
+    outFile.close();
 }
 
 // Function to display the menu
@@ -260,7 +294,6 @@ double applyStudentDiscount(double total) {
     int isStudent;
     string studentNumber;
 
-    // Ask if the user is a student
     cout << "Are you a student? (Enter 1 for Yes or 0 for No): ";
     cin >> isStudent;
 
