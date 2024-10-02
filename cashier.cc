@@ -5,7 +5,17 @@
 #include <ctime>
 using namespace std;
 
-// Constants
+/*
+Introduction:
+
+This program is designed to be a cashier system offering
+many options to the costumer, and it counts with
+student discount, saved orders(with time and date)
+,and the code gives the possibility to remove orders. Also very optimized, so that the workers
+using it can avoid mistakes.
+*/
+
+// Constants to give the cart limited items
 const int MAX_ITEMS = 10;  // Maximum number of items in the cart
 
 // Function prototypes
@@ -248,14 +258,14 @@ void saveOrder(string cart[], double prices[], int itemCount, double total) {
         return;
     }
 
-    // Get the current date and time
+    // Get the current date and time from the order
     time_t now = time(0);
     char* dt = ctime(&now);
 
-    // Write date and time
+    // Write date and time in the external file
     outFile << "Order completed on: " << dt;
 
-    // Write cart details
+    // Write cart details(i.e bowls added, extras added)
     for (int i = 0; i < itemCount; i++) {
         outFile << cart[i] << ": $" << fixed << setprecision(2) << prices[i] << endl;
     }
