@@ -28,5 +28,16 @@ Also, the code has a function that allows the cashier to delete certain items in
 so that making the cashier be able to "change" the source code without having to change the whole thing manually, and avoiding having to
 start the order over.
 
-VIDEO EXPLANING THE CODE WITH SLIDES TO BE ADDED.
+Video Explanation:
+
+https://github.com/user-attachments/assets/7359f68c-1cb4-4efa-a812-31e5ed381586
+
+
+Slides used:
+
+<img width="500" alt="Screenshot 2024-10-02 at 3 51 39 PM" src="https://github.com/user-attachments/assets/51736c8e-ae3f-4b4d-a38f-433b66974d50">
+<img width="500" alt="Screenshot 2024-10-02 at 3 51 46 PM" src="https://github.com/user-attachments/assets/40dd589d-5b28-4aeb-a683-4e36b1abc57e">
+<img width="500" alt="Screenshot 2024-10-02 at 3 51 49 PM" src="https://github.com/user-attachments/assets/509e53af-e7ef-4c29-97ec-e63126b3d408">
+<img width="500" alt="Screenshot 2024-10-02 at 3 51 53 PM" src="https://github.com/user-attachments/assets/6550cfaa-be6a-44a1-bf7e-ea0cfc0dcb93">
+
 
